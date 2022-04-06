@@ -1,7 +1,6 @@
 package com.cts.main;
 
 import com.cts.designPatterns.builder.User;
-import com.cts.designPatterns.singleton.Database;
 import com.cts.designPatterns.singleton.DatabaseTwo;
 
 public class Main {
