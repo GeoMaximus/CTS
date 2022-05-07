@@ -1,0 +1,544 @@
+--- CREATIONAL ---
+
+SINGLETON THREAD SAFE
+
+class SingletonSynchronized {
+  private static SingletonSynchronized instance; 
+  
+  private SingletonSynchronized(){}
+  
+  public static SingletonSynchronized getInstance() {
+    if(instance == null) {
+      synchronized (SingletonSynchronized.class) {
+        if(instance == null) {
+          instance = new SingletonSynchronized();
+        }
+      }
+    }
+    return instance;
+  }
+}
+
+
+BUILDER
+class Vehicle {
+  //required parameter
+  private String engine;
+  private int wheel;
+  
+  //optional parameter
+  private int airbags;
+  
+  public String getEngine() {
+    return this.engine;
+  }
+  
+  public int getWheel() {
+    return this.wheel;
+  }
+  
+  public int getAirbags() {
+    return this.airbags;
+  }
+  
+  private Vehicle(VehicleBuilder builder) {
+    this.engine = builder.engine;
+    this.wheel = builder.wheel;
+    this.airbags = builder.airbags;
+  }
+  
+  public static class VehicleBuilder {
+    private String engine;
+    private int wheel;
+    
+    private int airbags;
+    
+    public VehicleBuilder(String engine, int wheel) {
+      this.engine = engine;
+      this.wheel = wheel;
+    }
+    
+    public VehicleBuilder setAirbags(int airbags) {
+      this.airbags = airbags;
+      return this;
+    }
+    
+    public Vehicle build() {
+      return new Vehicle(this);
+    }
+  }
+}
+
+
+PROTOTYPE
+class Vehicle implements Cloneable {
+  private List<String> vehicleList;
+  
+  public Vehicle() {
+    this.vehicleList = new ArrayList<String>();
+  }
+  
+  public Vehicle(List<String> list) {
+    this.vehicleList = list;
+  }
+  
+  public void insertData() {
+    vehicleList.add("Honda amaze");
+    vehicleList.add("Audi A4");
+    vehicleList.add("Hyundai Creta");
+    vehicleList.add("Maruti Baleno");
+    vehicleList.add("Renault Duster");
+  }
+  
+  public List<String> getVehicleList() {
+    return this.vehicleList;
+  }
+  
+  @Override
+  public Object clone() throws CloneNotSupportedException {
+    List<String> tempList = new ArrayList<String>();
+    
+    for(String s : this.getVehicleList()) {
+      tempList.add(s);
+    }
+    
+    return new Vehicle(tempList);
+  }
+}
+
+FACTORY
+
+abstract class Vehicle {
+  public abstract int getWheel();
+  
+  public String toString() {
+    return "Wheel: " + this.getWheel();
+  }
+}
+
+class Car extends Vehicle {
+  int wheel;
+  
+  Car(int wheel) {
+    this.wheel = wheel;
+  }
+
+  @Override
+  public int getWheel() {
+    return this.wheel;
+  }
+}
+
+class Bike extends Vehicle {
+  int wheel;
+  
+  Bike(int wheel) {
+    this.wheel = wheel;
+  }
+  
+  @Override
+  public int getWheel() {
+    return this.wheel;
+  }
+}
+
+class VehicleFactory {
+  public static Vehicle getInstance(String type, int wheel) {
+    if(type == "car") {
+      return new Car(wheel);
+    } else if(type == "bike") {
+      return new Bike(wheel);
+    }
+    
+    return null;
+  }
+}
+
+--- STRUCTURAL ---
+
+ADAPTER
+
+interface WebDriver {
+  public void getElement();
+  public void selectElement();
+}
+
+
+class ChromeDriver implements WebDriver {
+
+  @Override
+  public void getElement() {
+    System.out.println("Get element from ChromeDriver");
+  }
+
+  @Override
+  public void selectElement() {
+    System.out.println("Select element from ChromeDriver");
+    
+  }
+  
+}
+
+class IEDriver {
+
+  public void findElement() {
+    System.out.println("Find element from IEDriver");
+  }
+
+  public void clickElement() {
+    System.out.println("Click element from IEDriver");
+  }
+  
+}
+
+class WebDriverAdapter implements WebDriver {
+
+  IEDriver ieDriver;
+  
+  public WebDriverAdapter(IEDriver ieDriver) {
+    this.ieDriver = ieDriver;
+  }
+  
+  @Override
+  public void getElement() {
+    ieDriver.findElement();
+    
+  }
+
+  @Override
+  public void selectElement() {
+    ieDriver.clickElement();
+  }
+  
+}
+
+
+DECORATOR
+
+interface Dress {
+  public void assemble();
+}
+
+class BasicDress implements Dress {
+  @Override
+  public void assemble() {
+    System.out.println("Basic Dress Features");
+  }
+}
+
+class DressDecorator implements Dress {
+  protected Dress dress;
+  
+  public DressDecorator(Dress c) {
+    this.dress = c;
+  }
+
+  @Override
+  public void assemble() {
+    this.dress.assemble();
+  }
+}
+
+class CasualDress extends DressDecorator {
+  public CasualDress(Dress c) {
+    super(c);
+  }
+  
+  @Override
+  public void assemble() {
+    super.assemble();
+    System.out.println("Adding Casual Dress Features");
+  }
+}
+
+
+class SportyDress extends DressDecorator {
+  public SportyDress(Dress c) {
+    super(c);
+  }
+  
+  @Override
+  public void assemble() {
+    super.assemble();
+    System.out.println("Adding Sporty Dress Features");
+  }
+}
+
+class FancyDress extends DressDecorator {
+  public FancyDress(Dress c) {
+    super(c);
+  }
+  
+  @Override
+  public void assemble() {
+    super.assemble();
+    System.out.println("Adding Fancy Dress Features");
+  }
+}
+
+PROXY
+
+interface DatabaseExecuter {
+  public void executeDatabase(String query) throws Exception;
+}
+
+class DatabaseExecuterImpl implements DatabaseExecuter {
+
+  @Override
+  public void executeDatabase(String query) throws Exception {
+    System.out.println("Going to execute Query: " + query);
+  }
+  
+}
+
+class DatabaseExecuterProxy implements DatabaseExecuter {
+  boolean ifAdmin;
+  DatabaseExecuterImpl dbExecuter;
+  
+  public DatabaseExecuterProxy(String name, String passwd) {
+    if(name == "Admin" && passwd == "Admin@123") {
+      ifAdmin = true;
+    }
+    dbExecuter = new DatabaseExecuterImpl();
+  }
+
+  @Override
+  public void executeDatabase(String query) throws Exception {
+    if(ifAdmin) {
+      dbExecuter.executeDatabase(query);
+    } else {
+      if(query.equals("DELETE")) {
+        throw new Exception("DELETE not allowed for non-admin user");
+      } else {
+        dbExecuter.executeDatabase(query);
+      }
+    }
+  }
+}
+
+COMPOSITE
+
+abstract class Account {
+  public abstract float getBalance();
+}
+
+class DepositeAccount extends Account {
+  private String accountNo;
+  private float accountBalance;
+
+  public DepositeAccount(String accountNo, float accountBalance) {
+    super();
+    this.accountNo = accountNo;
+    this.accountBalance = accountBalance;
+  }
+
+  public float getBalance() {
+    return accountBalance;
+  }
+
+}
+
+class SavingAccount extends Account {
+  private String accountNo;
+  private float accountBalance;
+
+  public SavingAccount(String accountNo, float accountBalance) {
+    super();
+    this.accountNo = accountNo;
+    this.accountBalance = accountBalance;
+  }
+
+  public float getBalance() {
+    return accountBalance;
+  }
+}
+
+class CompositeAccount extends Account {
+  private float totalBalance;
+  private List<Account> accountList = new ArrayList<Account>();
+
+  public float getBalance() {
+    totalBalance = 0;
+    for (Account f : accountList) {
+      totalBalance = totalBalance + f.getBalance();
+    }
+    return totalBalance;
+  }
+
+  public void addAccount(Account acc) {
+    accountList.add(acc);
+  }
+
+  public void removeAccount(Account acc) {
+    accountList.add(acc);
+  }
+}
+
+FACADE
+
+class Firefox {
+  public static Driver getFirefoxDriver() {
+    return null;
+  }
+  
+  public static void generateHTMLReport(String test, Driver driver) {
+    System.out.println("Generating HTML Report for Firefox Driver");
+  }
+  
+  public static void generateJUnitReport(String test, Driver driver) {
+    System.out.println("Generating JUNIT Report for Firefox Driver");
+  }
+}
+
+class Chrome {
+  public static Driver getChromeDriver() {
+    return null;
+  }
+  
+  public static void generateHTMLReport(String test, Driver driver) {
+    System.out.println("Generating HTML Report for Chrome Driver");
+  }
+  
+  public static void generateJUnitReport(String test, Driver driver) {
+    System.out.println("Generating JUNIT Report for Chrome Driver");
+  }
+}
+
+class WebExplorerHelperFacade {
+  public static void generateReports(String explorer, String report, String test) {
+    Driver driver = null;
+    switch(explorer) {
+    case "firefox":
+      driver = Firefox.getFirefoxDriver();
+      switch(report) {
+      case "html":
+        Firefox.generateHTMLReport(test, driver);
+        break;
+      case "junit":
+        Firefox.generateJUnitReport(test, driver);
+        break;
+      }
+    break;
+    case "chrome":
+      driver = Chrome.getChromeDriver();
+      switch(report) {
+      case "html":
+        Chrome.generateHTMLReport(test, driver);
+        break;
+      case "junit":
+        Chrome.generateJUnitReport(test, driver);
+        break;
+      }
+    }
+  }
+}
+
+
+FLYWEIGHT
+
+interface Employee {
+  public void assignSkill(String skill);
+  public void task();
+}
+
+class Developer implements Employee {
+
+  private final String JOB;
+  private String skill;
+  
+  public Developer() {
+    JOB = "Fix the issue";
+  }
+  
+  @Override
+  public void assignSkill(String skill) {
+    this.skill = skill;
+  }
+
+  @Override
+  public void task() {
+    System.out.println("Developer with skill: " + this.skill + " with Job: " + JOB);
+  }
+  
+}
+
+class Tester implements Employee {
+
+  private final String JOB;
+  
+  private String skill;
+  
+  public Tester() {
+    JOB = "Test the issue";
+  }
+  
+  @Override
+  public void assignSkill(String skill) {
+    this.skill = skill;
+  }
+
+  @Override
+  public void task() {
+    System.out.println("Tester with Skill: " + this.skill + " with Job: " + JOB);
+  }
+  
+}
+
+
+class EmployeeFactory {
+  private static HashMap<String, Employee> m = new HashMap<String, Employee>();
+  
+  public static Employee getEmployee(String type) {
+    Employee p = null;
+    if(m.get(type) != null) {
+      p = m.get(type);
+    } else {
+      switch(type) {
+      case "Developer": 
+        System.out.println("Developer Created");
+        p = new Developer();
+        break;
+      case "Tester":
+        System.out.println("Tester Created");
+        p = new Tester();
+        break;
+      default:
+        System.out.println("No Such Employee");
+      }
+      
+      m.put(type, p);
+    }
+    return p;
+  }
+}
+
+public class Engineering {
+
+  private static String employeeType[] = {"Developer", "Tester"};
+  private static String skills[] = {"Java", "C++", ".Net", "Python"};
+  
+  public static void main(String[] args) {
+    for(int i = 0; i < 10; i++) {
+      Employee e = EmployeeFactory.getEmployee(getRandEmployee());
+      
+      e.assignSkill(getRandSkill());
+      
+      e.task();
+    }
+  }
+  
+  public static String getRandEmployee() {
+    Random r = new Random();
+    int randInt = r.nextInt(employeeType.length);
+    
+    return employeeType[randInt];
+  }
+  
+  public static String getRandSkill() {
+    Random r = new Random();
+    int randInt = r.nextInt(skills.length);
+    
+    return skills[randInt];
+  }
+
+}
