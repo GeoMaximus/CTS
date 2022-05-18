@@ -1,5 +1,5 @@
 # CTS
-# In this repo you can find all design patterns studied during the Software Quality and Testing course and seminars
+# In this repo you can find all design patterns studied during the Software Quality and Testing course and seminars (using Java)
 # Creational design patters
 # - Singleton
 # - Builder
